@@ -9,10 +9,12 @@
     - [Student Performance](#student-performance)
     - [Toronto Weather](#toronto-weather)
     - [Credit Card Approval Prediction](#credit-card-approval-prediction)
+    - [Tips](#tips)
   - [Scatter Plots](#scatter-plots)
   - [Continuous Distribution Plots](#continuous-distribution-plots)
     - [Rug Plot](#rug-plot)
     - [Histogram](#histogram)
+    - [Kernel Density Estimation](#kernel-density-estimation)
   - [Categorical Plots](#categorical-plots)
     - [Count Plot](#count-plot)
     - [Barplot](#barplot)
@@ -30,6 +32,7 @@
   - [Matrix Plots](#matrix-plots)
     - [Heatmap](#heatmap)
     - [Clustermap](#clustermap)
+  - [Facet Grid](#facet-grid)
 
 <!-- /TOC -->
 
@@ -138,6 +141,28 @@ credit_approv_df.head(3).transpose()
 | OCCUPATION_TYPE | NaN | NaN | Security staff |
 | CNT_FAM_MEMBERS | 2 | 2 | 2 |
 | CLASSIFICAO | bom | bom | bom |
+
+
+### Tips
+
+```python
+!wget https://raw.githubusercontent.com/plotly/datasets/master/tips.csv -P datasets
+```
+
+```python
+tips_df = pd.read_csv('datasets/tips.csv')
+tips_df.head(3).transpose()
+```
+
+|  | 0 | 1 | 2 |
+| -- | -- | -- | -- |
+| total_bill | 16.99 | 10.34 | 21.01 |
+| tip | 1.01 | 1.66 | 3.5 |
+| sex | Female | Male | Male |
+| smoker | No | No | No |
+| day | Sun | Sun | Sun |
+| time | Dinner | Dinner | Dinner |
+| size | 2 | 3 | 3 |
 
 
 ## Scatter Plots
@@ -253,11 +278,14 @@ plt.savefig('assets/Seaborn_Cheat_Sheet_04.webp', bbox_inches='tight')
 ```python
 credit_approv_df['AGE_YEARS'] = credit_approv_df['DAYS_BIRTH'].apply(lambda num: round(num/(-365)))
 
+plt.figure(figsize=(10, 5))
+plt.title('Age in Years Distribution')
 
-```python
-
-```
-
+sns.histplot(
+    data=credit_approv_df,
+    x='AGE_YEARS',
+    bins=45,
+    element='step',
     hue='CODE_GENDER',
     palette='tab20'
 )
@@ -387,6 +415,20 @@ plt.savefig('assets/Seaborn_Cheat_Sheet_22.webp', bbox_inches='tight')
 ### Violinplot
 
 ```python
+plt.figure(figsize=(12, 5))
+plt.title('Tips Distribution')
+
+sns.violinplot(
+    x=tips_df['tip'],
+    color='mediumspringgreen'
+)
+
+plt.savefig('assets/Seaborn_Cheat_Sheet_25.webp', bbox_inches='tight')
+```
+
+![Seaborn Cheat Sheet 2023](https://github.com/mpolinowski/python-seaborn-2023/raw/master/assets/Seaborn_Cheat_Sheet_25.webp)
+
+```python
 plt.figure(figsize=(10, 5))
 plt.title('Math Score by Gender and Prep Course Attendance')
 
@@ -427,6 +469,30 @@ plt.savefig('assets/Seaborn_Cheat_Sheet_10.webp', bbox_inches='tight')
 
 ![Seaborn Cheat Sheet 2023](https://github.com/mpolinowski/python-seaborn-2023/raw/master/assets/Seaborn_Cheat_Sheet_10.webp)
 
+```python
+colour_palette = ['dodgerblue', 'mediumspringgreen']
+
+plt.figure(figsize=(12, 5))
+plt.title('Tips by Day and Time of the Day')
+
+sns.swarmplot(
+    data=tips_df,
+    x='day',
+    y='tip',
+    hue='time',
+    palette=colour_palette
+)
+plt.legend(loc='upper right')
+plt.savefig('assets/Seaborn_Cheat_Sheet_24.webp', bbox_inches='tight')
+```
+
+```python
+![Seaborn Cheat Sheet 2023](https://github.com/mpolinowski/python-seaborn-2023/raw/master/assets/Seaborn_Cheat_Sheet_24.webp)
+```
+
+```python
+
+```
 
 ### Boxenplot
 
@@ -635,3 +701,48 @@ plt.savefig('assets/Seaborn_Cheat_Sheet_19.webp', bbox_inches='tight')
 ```
 
 ![Seaborn Cheat Sheet 2023](https://github.com/mpolinowski/python-seaborn-2023/raw/master/assets/Seaborn_Cheat_Sheet_19.webp)
+
+
+## Facet Grid
+
+```python
+plot = sns.FacetGrid(
+    tips_df,
+    col='time',
+    row='smoker',
+    hue='day',
+    palette='plasma_r',
+    sharex=True
+)
+
+plot = plot.map(
+    plt.hist,
+    'tip'
+)
+
+plot = plot.add_legend()
+
+plt.savefig('assets/Seaborn_Cheat_Sheet_26.webp', bbox_inches='tight')
+```
+
+![Seaborn Cheat Sheet 2023](https://github.com/mpolinowski/python-seaborn-2023/raw/master/assets/Seaborn_Cheat_Sheet_26.webp)
+
+```python
+plot = sns.FacetGrid(
+    tips_df,
+    col='day',
+    row='sex',
+    hue='time',
+    palette='plasma'
+)
+
+plot = plot.map(
+    plt.scatter,
+    'total_bill', 'tip',
+)
+
+plot = plot.add_legend()
+plt.savefig('assets/Seaborn_Cheat_Sheet_27.webp', bbox_inches='tight')
+```
+
+![Seaborn Cheat Sheet 2023](https://github.com/mpolinowski/python-seaborn-2023/raw/master/assets/Seaborn_Cheat_Sheet_27.webp)
